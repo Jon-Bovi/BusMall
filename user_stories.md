@@ -1,6 +1,8 @@
 # User Stories - BusMall
 
-- As a marketing research team member, I want to give focus group participants 25 sets of three random products.
+- As a marketing research team member:
+
+    * I want to give focus group participants 25 sets of three random products.
 
     * I want participants to have to choose one item out of each set of 3 that is their favorite (what they are most likely to buy).
 
@@ -10,7 +12,9 @@
 
     * I want the counts per product to stack/accumulate with each 25 guesses, rather than reset each time the page reloads.
 
-- As a developer, I want the participant to click on the product image of their favorite product from the set.
+- As a developer:
+
+    * I want the participant to click on the product image of their favorite product from the set.
 
     * I want the research study to stop after 25 sets/choices.
 
@@ -22,7 +26,9 @@
 
     * I want each set to be composed of three images chosen randomly.
 
-- As a focus group participant, I want the page's layout to make interacting with the page intuitive.
+- As a focus group participant:
+
+    * I want the page's layout to make interacting with the page intuitive.
 
     * I want the page to have a pleasant color scheme.
 

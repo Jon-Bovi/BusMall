@@ -62,6 +62,7 @@ function chooseRandomProduct() {
 }
 
 function renderThree() {
+  imagesEl.innerHTML = '';
   for (var i = 0; i < 3; i++) {
     var imgEl = document.createElement('img');
     imgEl.setAttribute('src', currentThree[i].filePath);

@@ -26,6 +26,8 @@
 
     * I want each set to be composed of three images chosen randomly.
 
+    * I want to structure the HTML semantically.
+
 - As a focus group participant:
 
     * I want the page's layout to make interacting with the page intuitive.

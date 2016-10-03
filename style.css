@@ -1,4 +1,22 @@
 img {
+  max-height: 100%;
+  max-width: 100%;
+  vertical-align: middle
+}
+
+
+div {
   display: inline-block;
   width: 30%;
+  height: 300px;
+  vertical-align: middle;
+  text-align: center;
+  border: 2px solid gray;
+  margin-right: 5px;
+}
+
+span {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }

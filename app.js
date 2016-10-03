@@ -8,6 +8,7 @@ var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
 var buttonEl = document.createElement('button');
+var clickListEl = document.createElement('ul');
 var setCount = 0;
 
 function Product(filename) {
@@ -16,7 +17,7 @@ function Product(filename) {
   this.clicks = 0;
   this.timesShown = 0;
   this.percentageClicked = function() {
-    return 100 * clicks / timesShown;
+    return (100.0 * this.clicks / this.timesShown).toPrecision(3);
   }
 };
 
@@ -68,9 +69,15 @@ function chooseRandomProduct() {
 function renderThree() {
   imagesEl.innerHTML = '';
   for (var i = 0; i < 3; i++) {
+    var divEl = document.createElement('div');
+    divEl.setAttribute('id', i + 'imgcontainer');
     var imgEl = document.createElement('img');
     imgEl.setAttribute('src', currentThree[i].filePath);
-    imagesEl.appendChild(imgEl);
+    imgEl.setAttribute('id', i + 'img');
+    var helperEl = document.createElement('span');
+    divEl.appendChild(helperEl);
+    divEl.appendChild(imgEl);
+    imagesEl.appendChild(divEl);
   }
 }
 
@@ -104,27 +111,27 @@ function revealResultsButton() {
 }
 
 function handleButtonClick() {
-  buttonEl.textContent = generateClickList();
+  resultsEl.innerHTML = '';
+  generateClickList();
 }
 
 function whichObject(targetEl) {
-  var i = 0;
-  while (i < 3) {
-    var name = targetEl.getAttribute('src');
-    if (name === currentThree[i].filePath) {
-      return currentThree[i];
-    }
-    ++i;
-  }
-  return false;
+  var i = parseInt(targetEl.getAttribute('id'));
+  console.log(i);
+  return currentThree[i];
 }
 
 function generateClickList() {
-  var clickList = [];
+  clickListEl.innerHTML = '';
   for (var i = 0; i < numProducts; i++) {
-    clickList.push(productObjectList[i].name + ': ' + productObjectList[i].clicks + ' clicks');
+    var liEl = document.createElement('li');
+    var numClicks = productObjectList[i].clicks;
+    var timesShown = productObjectList[i].timesShown;
+    var percentageClicked = productObjectList[i].percentageClicked();
+    liEl.textContent = productObjectList[i].name + ': ' + numClicks + ' clicks; ' + timesShown + ' times shown; clicked ' + percentageClicked + '% of the time.';
+    clickListEl.appendChild(liEl);
   }
-  return clickList;
+  resultsEl.appendChild(clickListEl);
 }
 
 function makeObjectList() {

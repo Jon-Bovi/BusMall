@@ -1,0 +1,88 @@
+* {
+  font-family: Quicksand;
+}
+
+body {
+  margin: 0px;
+}
+
+img {
+  max-height: 100%;
+  max-width: 100%;
+  vertical-align: middle
+}
+
+header {
+  width: 100%;
+  margin: 0px;
+}
+
+h1 {
+  padding: 0px 50px;
+}
+
+h2 {
+  color: white;
+  background-color: gray;
+  padding: 10px 50px;
+}
+
+#instructions {
+  margin: 50px;
+}
+
+#images {
+  margin: auto;
+  text-align: center;
+  clear:right;
+}
+
+#results {
+  margin-left: 100px;
+}
+
+#allsuck {
+  position: absolute;
+  right: 70px;
+  top: 220px;
+}
+
+button {
+  padding: 10px 30px;
+  background-color: #d5d5d7;
+  border: 2px solid gray;
+  transition: 200ms all;
+}
+
+button:hover {
+  color: white;
+  background-color: black;
+}
+
+div {
+  display: inline-block;
+  width: 30%;
+  height: 300px;
+  vertical-align: middle;
+  text-align: center;
+  border: 2px solid gray;
+  margin-right: 5px;
+}
+
+span {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  width: 1000px;
+  line-height: 200%;
+}
+
+
+#results button {
+  margin-top: 30px;
+}

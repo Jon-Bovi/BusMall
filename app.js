@@ -4,11 +4,13 @@ var productNameList = ['bag.jpg', 'bathroom.jpg',	'breakfast.jpg', 'chair.jpg',	
 var productObjectList = [];
 var previousThree = [];
 var currentThree = [];
+var clickData = [];
+var labels = [];
+var barGraph;
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
 var buttonEl = document.createElement('button');
-var clickListEl = document.createElement('ul');
 var allsuckEl = document.getElementById('allsuck');
 var setCount = 0;
 
@@ -93,7 +95,7 @@ function revealResultsButton() {
 
 function handleResultsButtonClick() {
   resultsEl.innerHTML = '';
-  generateClickList();
+  drawBarGraph();
 }
 
 function handleAllSuckClick() {
@@ -108,17 +110,50 @@ function whichObject(targetEl) {
   return currentThree[i];
 }
 
-function generateClickList() {
-  clickListEl.innerHTML = '';
+// var numClicks = productObjectList[i].clicks;
+// var timesShown = productObjectList[i].timesShown;
+// var percentageClicked = productObjectList[i].percentageClicked();
+
+
+function generateData(array, dataType) {
   for (var i = 0; i < numProducts; i++) {
-    var liEl = document.createElement('li');
-    var numClicks = productObjectList[i].clicks;
-    var timesShown = productObjectList[i].timesShown;
-    var percentageClicked = productObjectList[i].percentageClicked();
-    liEl.textContent = productObjectList[i].name + ':  ' + numClicks + ' clicks; ' + timesShown + ' times shown; clicked ' + percentageClicked + '% of the time.';
-    clickListEl.appendChild(liEl);
+    array[i] = productObjectList[i][dataType];
   }
-  resultsEl.appendChild(clickListEl);
+}
+
+var data =  {
+  labels: labels,
+  datasets: [{
+    label: '# of Votes',
+    data: clickData,
+    backgroundColor: [
+      'rgba(255, 99, 132, 0.2)',
+      'rgba(54, 162, 235, 0.2)',
+      'rgba(255, 206, 86, 0.2)',
+      'rgba(75, 192, 192, 0.2)',
+      'rgba(153, 102, 255, 0.2)',
+      'rgba(255, 159, 64, 0.2)'
+    ],
+    borderColor: [
+      'rgba(255,99,132,1)',
+      'rgba(54, 162, 235, 1)',
+      'rgba(255, 206, 86, 1)',
+      'rgba(75, 192, 192, 1)',
+      'rgba(153, 102, 255, 1)',
+      'rgba(255, 159, 64, 1)'
+    ],
+    borderWidth: 1
+  }]
+};
+
+function drawBarGraph() {
+  generateData(clickData, 'clicks');
+  generateData(labels, 'name');
+  var ctx = document.getElementById('bargraph').getContext('2d');
+  barGraph = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+  });
 }
 
 function makeObjectList() {

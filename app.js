@@ -19,14 +19,14 @@ function Product(filename) {
   this.timesShown = 0;
   this.percentageClicked = function() {
     return (100.0 * this.clicks / this.timesShown).toPrecision(3);
-  }
+  };
 };
 
 function selectThree() {
   currentThree = [];
   var numSelected = 0;
   do {
-    var randomObj = chooseRandomProduct()
+    var randomObj = chooseRandomProduct();
     // console.log(randomObj.name);
     if ((currentThree.indexOf(randomObj) === -1) && (previousThree.indexOf(randomObj) === -1)) {
       // console.log('Adding ' + randomObj.name + ' to currentThree');

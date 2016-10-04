@@ -26,7 +26,8 @@ function selectThree() {
   var numSelected = 0;
   do {
     var randomObj = chooseRandomProduct()
-    if (!isAlreadySelected(randomObj) && !wasShownPreviously(randomObj)) {
+    console.log(randomObj.name);
+    if ((currentThree.indexOf(randomObj) === -1) && (previousThree.indexOf(randomObj) === -1)) {
       console.log('Adding ' + randomObj.name + ' to currentThree');
       currentThree.push(randomObj);
       randomObj.timesShown += 1;
@@ -39,27 +40,27 @@ function selectThree() {
   previousThree = currentThree.slice();
 }
 
-function isAlreadySelected(Obj) {
-  for (var i = 0; i < currentThree.length; i++) {
-    if (currentThree[i] === Obj) {
-      console.log(Obj.name + ' IS already selected.');
-      return true;
-    }
-  }
-  console.log(Obj.name + ' is NOT already selected.');
-  return false;
-}
-
-function wasShownPreviously(Obj) {
-  for (var i = 0; i < previousThree.length; i++) {
-    if (Obj === previousThree[i]) {
-      console.log(Obj.name + ' WAS shown previously.');
-      return true;
-    }
-  }
-  console.log(Obj.name + ' was NOT shown previously.');
-  return false;
-}
+// function isAlreadySelected(Obj) {
+//   for (var i = 0; i < currentThree.length; i++) {
+//     if (currentThree[i] === Obj) {
+//       console.log(Obj.name + ' IS already selected.');
+//       return true;
+//     }
+//   }
+//   console.log(Obj.name + ' is NOT already selected.');
+//   return false;
+// }
+//
+// function wasShownPreviously(Obj) {
+//   for (var i = 0; i < previousThree.length; i++) {
+//     if (Obj === previousThree[i]) {
+//       console.log(Obj.name + ' WAS shown previously.');
+//       return true;
+//     }
+//   }
+//   console.log(Obj.name + ' was NOT shown previously.');
+//   return false;
+// }
 
 function chooseRandomProduct() {
   var randomIndex = Math.floor(Math.random() * numProducts);

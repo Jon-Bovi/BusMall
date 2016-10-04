@@ -27,15 +27,15 @@ function selectThree() {
   var numSelected = 0;
   do {
     var randomObj = chooseRandomProduct()
-    console.log(randomObj.name);
+    // console.log(randomObj.name);
     if ((currentThree.indexOf(randomObj) === -1) && (previousThree.indexOf(randomObj) === -1)) {
-      console.log('Adding ' + randomObj.name + ' to currentThree');
+      // console.log('Adding ' + randomObj.name + ' to currentThree');
       currentThree.push(randomObj);
       randomObj.timesShown += 1;
       ++numSelected;
     }
-    console.log('current three: ');
-    console.log(currentThree);
+    // console.log('current three: ');
+    // console.log(currentThree);
   } while (numSelected < 3);
   previousThree = [];
   previousThree = currentThree.slice();
@@ -79,6 +79,7 @@ function handleImgClick(event) {
     renderThree();
     // console.log(setCount);
   }
+  console.log(setCount);
 }
 
 function revealResultsButton() {
@@ -98,7 +99,7 @@ function handleResultsButtonClick() {
 function handleAllSuckClick() {
   selectThree();
   renderThree();
-  // console.log(setCount);
+  console.log(setCount);
 }
 
 function whichObject(targetEl) {

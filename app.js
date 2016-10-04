@@ -9,6 +9,7 @@ var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
 var buttonEl = document.createElement('button');
 var clickListEl = document.createElement('ul');
+var allsuckEl = document.getElementById('allsuck');
 var setCount = 0;
 
 function Product(filename) {
@@ -40,28 +41,6 @@ function selectThree() {
   previousThree = currentThree.slice();
 }
 
-// function isAlreadySelected(Obj) {
-//   for (var i = 0; i < currentThree.length; i++) {
-//     if (currentThree[i] === Obj) {
-//       console.log(Obj.name + ' IS already selected.');
-//       return true;
-//     }
-//   }
-//   console.log(Obj.name + ' is NOT already selected.');
-//   return false;
-// }
-//
-// function wasShownPreviously(Obj) {
-//   for (var i = 0; i < previousThree.length; i++) {
-//     if (Obj === previousThree[i]) {
-//       console.log(Obj.name + ' WAS shown previously.');
-//       return true;
-//     }
-//   }
-//   console.log(Obj.name + ' was NOT shown previously.');
-//   return false;
-// }
-
 function chooseRandomProduct() {
   var randomIndex = Math.floor(Math.random() * numProducts);
   return productObjectList[randomIndex];
@@ -82,10 +61,10 @@ function renderThree() {
   }
 }
 
-function handleClick(event) {
+function handleImgClick(event) {
 
   var target = event.target;
-  console.log(target);
+  // console.log(target);
   if (target.getAttribute('id') === 'images') {
     return console.log('clicked...but not on image');
   }
@@ -94,11 +73,11 @@ function handleClick(event) {
   ++setCount;
   if (setCount >= 25) {
     revealResultsButton();
-    return imagesEl.removeEventListener('click', handleClick);
+    return imagesEl.removeEventListener('click', handleImgClick);
   } else {
     selectThree();
     renderThree();
-    console.log(setCount);
+    // console.log(setCount);
   }
 }
 
@@ -108,17 +87,23 @@ function revealResultsButton() {
   buttonEl.textContent = 'Show Results';
   resultsEl.appendChild(buttonEl);
 
-  buttonEl.addEventListener('click', handleButtonClick);
+  buttonEl.addEventListener('click', handleResultsButtonClick);
 }
 
-function handleButtonClick() {
+function handleResultsButtonClick() {
   resultsEl.innerHTML = '';
   generateClickList();
 }
 
+function handleAllSuckClick() {
+  selectThree();
+  renderThree();
+  // console.log(setCount);
+}
+
 function whichObject(targetEl) {
   var i = parseInt(targetEl.getAttribute('id'));
-  console.log(i);
+  // console.log(i);
   return currentThree[i];
 }
 
@@ -129,7 +114,7 @@ function generateClickList() {
     var numClicks = productObjectList[i].clicks;
     var timesShown = productObjectList[i].timesShown;
     var percentageClicked = productObjectList[i].percentageClicked();
-    liEl.textContent = productObjectList[i].name + ': ' + numClicks + ' clicks; ' + timesShown + ' times shown; clicked ' + percentageClicked + '% of the time.';
+    liEl.textContent = productObjectList[i].name + ':  ' + numClicks + ' clicks; ' + timesShown + ' times shown; clicked ' + percentageClicked + '% of the time.';
     clickListEl.appendChild(liEl);
   }
   resultsEl.appendChild(clickListEl);
@@ -141,17 +126,8 @@ function makeObjectList() {
   }
 }
 
-function test() {
-  console.log('Previous three before: ');
-  console.log(previousThree);
-  selectThree();
-  renderThree();
-  console.log('Previous three after: ');
-  console.log(previousThree);
-}
-
-imagesEl.addEventListener('click', handleClick);
-
+imagesEl.addEventListener('click', handleImgClick);
+allsuckEl.addEventListener('click', handleAllSuckClick);
 
 makeObjectList();
 selectThree();

@@ -29,7 +29,9 @@ function Product(filename) {
     return (100.0 * this.clicks / this.timesShown).toPrecision(3);
   };
 };
-
+function calcPercentage(product) {
+  return (100.0 * product.clicks / product.timesShown).toPrecision(3);
+}
 // selects three non-repeated images
 function selectThree() {
   currentThree = [];
@@ -81,6 +83,7 @@ function handleImgClick(event) {
   }
   var targetObject = whichObject(target);
   targetObject.clicks += 1;
+  localStorage.setItem('productObjectList', JSON.stringify(productObjectList));
   voteCount++;
   if (voteCount === 25) {
     imagesEl.removeEventListener('mouseup', handleImgClick);
@@ -160,14 +163,14 @@ function generateData() {
   for (var i = 0; i < numProducts; i++) {
     labels[i] = productObjectList[i].name;
     clickData[i] = productObjectList[i].clicks;
-    percentData[i] = productObjectList[i].clicksPerTimesShownPercentage();
+    percentData[i] = calcPercentage(productObjectList[i]);
   }
 }
 
 function sortProductsByClicks() {
   productObjectList.sort(function (a, b) {
     if (b.clicks === a.clicks) {
-      return b.clicksPerTimesShownPercentage() - a.clicksPerTimesShownPercentage();
+      return calcPercentage(b) - calcPercentage(a);
     } else {
       return b.clicks - a.clicks;
     }
@@ -176,10 +179,10 @@ function sortProductsByClicks() {
 
 function sortProductsByPercent() {
   productObjectList.sort(function (a, b) {
-    if (b.clicksPerTimesShownPercentage() === a.clicksPerTimesShownPercentage()) {
+    if (calcPercentage(b) === calcPercentage(a)) {
       return b.clicks - a.clicks;
     } else {
-      return b.clicksPerTimesShownPercentage() - a.clicksPerTimesShownPercentage();
+      return calcPercentage(b) - calcPercentage(a);
     }
   });
 }
@@ -241,10 +244,19 @@ function makeObjectList() {
     notShownYet.push(productObjectList[i]);
   }
 }
+function handleLoad() {
+  if (localStorage.productObjectList) {
+    productObjectList = JSON.parse(localStorage.getItem('productObjectList'));
+  }
+  else {
+    makeObjectList();
+  }
+
+  selectThree();
+  renderThree();
+}
 
 imagesEl.addEventListener('mouseup', handleImgClick);
 allsuckEl.addEventListener('click', handleAllSuckClick);
 
-makeObjectList();
-selectThree();
-renderThree();
+window.addEventListener('load', handleLoad);

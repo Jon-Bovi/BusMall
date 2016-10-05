@@ -7,14 +7,15 @@ var currentThree = [];
 var clickData = [];
 var labels = [];
 var ratioData = [];
-var barGraph;
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
 var buttonEl = document.createElement('button');
 var allsuckEl = document.getElementById('allsuck');
+var imgContainers = document.getElementsByClassName('imgcontainer');
 var setCount = 0;
 var notShownYet = [];
+var barGraph;
 
 function Product(filename) {
   this.name = filename.substring(0, filename.length - 4);
@@ -56,17 +57,10 @@ function chooseRandomProduct() {
 }
 
 function renderThree() {
-  imagesEl.innerHTML = '';
+  // imagesEl.innerHTML = '';
   for (var i = 0; i < 3; i++) {
-    var divEl = document.createElement('div');
-    divEl.setAttribute('id', i + 'imgcontainer');
-    var imgEl = document.createElement('img');
-    imgEl.setAttribute('src', currentThree[i].filePath);
-    imgEl.setAttribute('id', i + 'img');
-    var helperEl = document.createElement('span');
-    divEl.appendChild(helperEl);
-    divEl.appendChild(imgEl);
-    imagesEl.appendChild(divEl);
+    var imgEl = document.getElementById(i + 'img');
+    imgEl.src = currentThree[i].filePath;
   }
 }
 
@@ -79,15 +73,18 @@ function handleImgClick(event) {
   }
   var targetObject = whichObject(target);
   targetObject.clicks += 1;
-  ++setCount;
-  if (setCount >= 25) {
+  setCount++;
+  if (setCount === 25) {
+    imagesEl.removeEventListener('mouseup', handleImgClick);
+    for (var i = 2; i >= 0; i--) {
+      imgContainers[i].setAttribute('class', 'end');
+    }
     revealResultsButton();
-    return imagesEl.removeEventListener('click', handleImgClick);
   } else {
     selectThree();
     renderThree();
-    // console.log(setCount);
   }
+    // console.log(setCount);
   console.log(setCount);
 }
 
@@ -102,7 +99,29 @@ function revealResultsButton() {
 
 function handleResultsButtonClick() {
   resultsEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
+  var clicksGraphButton = document.createElement('button');
+  var ratioGraphButton = document.createElement('button');
+  clicksGraphButton.textContent = 'Show Clicks';
+  ratioGraphButton.textContent = 'Show Clicks to Times Shown Ratio';
+  resultsEl.appendChild(clicksGraphButton);
+  resultsEl.appendChild(ratioGraphButton);
+  clicksGraphButton.addEventListener('click', makeClicksGraph);
+  ratioGraphButton.addEventListener('click', makeRatioGraph);
+  // sortByRatio();
+  generateData();
   drawBarGraph();
+}
+
+function makeClicksGraph() {
+  data.datasets[0].data = clickData;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked';
+}
+
+function makeRatioGraph() {
+  data.datasets[0].data = ratioData;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
 }
 
 function handleAllSuckClick() {
@@ -123,14 +142,13 @@ function generateData() {
     clickData[i] = productObjectList[i].clicks;
     ratioData[i] = productObjectList[i].clickedToShownRatio();
   }
+  numSort(clickData);
+  numSort(ratioData);
 }
 
-function sortByRatio() {
-  productObjectList.sort(function (a, b) {
-    if (b.clickedToShownRatio() === a.clickedToShownRatio()) {
-      return b.clicks - a.clicks;
-    }
-    return b.clickedToShownRatio() - a.clickedToShownRatio();
+function numSort(array) {
+  array.sort(function (a, b) {
+    return b - a;
   });
 }
 
@@ -165,8 +183,7 @@ var data =  {
 };
 
 function drawBarGraph() {
-  sortByRatio();
-  generateData();
+
   var ctx = document.getElementById('bargraph').getContext('2d');
   barGraph = new Chart(ctx, {
     type: 'bar',
@@ -183,13 +200,13 @@ function drawBarGraph() {
       responsive: false
     }
   });
-  customToolTips();
+  // customToolTips();
 }
 
-function customToolTips() {
-  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
-  barGraph.tooltip._data.datasets[0].data = ratioData;
-}
+// function customToolTips() {
+//   barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+//   barGraph.tooltip._data.datasets[0].data = ratioData;
+// }
 
 function makeObjectList() {
   for (var i = 0; i < numProducts; i++) {
@@ -198,7 +215,7 @@ function makeObjectList() {
   }
 }
 
-imagesEl.addEventListener('click', handleImgClick);
+imagesEl.addEventListener('mouseup', handleImgClick);
 allsuckEl.addEventListener('click', handleAllSuckClick);
 
 makeObjectList();

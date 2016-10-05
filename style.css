@@ -56,6 +56,7 @@ button {
   background-color: #d5d5d7;
   border: 2px solid gray;
   transition: 200ms all;
+  cursor: pointer;
 }
 
 button:hover {
@@ -71,10 +72,20 @@ div {
   text-align: center;
   border: 4px outset #d5d5d5;
   margin-right: 5px;
+  cursor: pointer;
 }
 
 div:active {
   border: 4px inset #d5d5d5;
+}
+
+.end {
+  border-color: #ef9999;
+  cursor: default;
+}
+
+.end:active {
+  border-color: #aa0000;
 }
 
 span {

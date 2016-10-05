@@ -10,7 +10,7 @@ var ratioData = [];
 var barGraph;
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
-var resultbuttonEl = document.getElementById('resultbutton');
+var resultsEl = document.getElementById('results');
 var buttonEl = document.createElement('button');
 var allsuckEl = document.getElementById('allsuck');
 var setCount = 0;
@@ -95,13 +95,13 @@ function revealResultsButton() {
 
   buttonEl.setAttribute('type', 'button');
   buttonEl.textContent = 'Show Results';
-  resultbuttonEl.appendChild(buttonEl);
+  resultsEl.appendChild(buttonEl);
 
   buttonEl.addEventListener('click', handleResultsButtonClick);
 }
 
 function handleResultsButtonClick() {
-  resultbuttonEl.innerHTML = '';
+  resultsEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
   drawBarGraph();
 }
 
@@ -139,7 +139,26 @@ var data =  {
   datasets: [{
     label: 'Votes per Item (Sorted by Times Clicked to Times Shown Ratio)',
     data: clickData,
-    backgroundColor: 'rgba(99, 99, 299, 0.2)',
+    backgroundColor: ['rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)'],
     borderColor: 'rgba(99, 99, 199, 1)',
     borderWidth: 1
   }]
@@ -169,7 +188,6 @@ function drawBarGraph() {
 
 function customToolTips() {
   barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
-  barGraph.config.data.datasets[0].data = clickData;
   barGraph.tooltip._data.datasets[0].data = ratioData;
 }
 

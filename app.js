@@ -6,24 +6,26 @@ var previousThree = [];
 var currentThree = [];
 var clickData = [];
 var labels = [];
-var ratioData = [];
+var percentData = [];
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
-var buttonEl = document.createElement('button');
+var chartEl = document.getElementById('chart');
+var revealButtonEl = document.createElement('button');
 var allsuckEl = document.getElementById('allsuck');
 var imgContainers = document.getElementsByClassName('imgcontainer');
 var setCount = 0;
 var notShownYet = [];
 var barGraph;
+var stepSize = 1;
 
 function Product(filename) {
   this.name = filename.substring(0, filename.length - 4);
   this.filePath = './img/' + filename;
   this.clicks = 0;
   this.timesShown = 0;
-  this.clickedToShownRatio = function() {
-    return (this.clicks / this.timesShown).toPrecision(3);
+  this.clicksPerTimesShownPercentage = function() {
+    return (100.0 * this.clicks / this.timesShown).toPrecision(3);
   };
 };
 
@@ -90,38 +92,50 @@ function handleImgClick(event) {
 
 function revealResultsButton() {
 
-  buttonEl.setAttribute('type', 'button');
-  buttonEl.textContent = 'Show Results';
-  resultsEl.appendChild(buttonEl);
+  revealButtonEl.setAttribute('type', 'button');
+  revealButtonEl.textContent = 'Show Results';
+  resultsEl.appendChild(revealButtonEl);
 
-  buttonEl.addEventListener('click', handleResultsButtonClick);
+  revealButtonEl.addEventListener('click', handleResultsButtonClick);
 }
 
 function handleResultsButtonClick() {
-  resultsEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
+  resultsEl.innerHTML = '';
   var clicksGraphButton = document.createElement('button');
-  var ratioGraphButton = document.createElement('button');
+  var percentGraphButton = document.createElement('button');
   clicksGraphButton.textContent = 'Show Clicks';
-  ratioGraphButton.textContent = 'Show Clicks to Times Shown Ratio';
+  percentGraphButton.textContent = 'Show Clicks per Times Shown %';
   resultsEl.appendChild(clicksGraphButton);
-  resultsEl.appendChild(ratioGraphButton);
+  resultsEl.appendChild(percentGraphButton);
   clicksGraphButton.addEventListener('click', makeClicksGraph);
-  ratioGraphButton.addEventListener('click', makeRatioGraph);
-  // sortByRatio();
+  percentGraphButton.addEventListener('click', makePercentGraph);
   generateData();
   drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+  barGraph.tooltip._data.datasets[0].data = percentData;
 }
 
 function makeClicksGraph() {
   data.datasets[0].data = clickData;
-  drawBarGraph();
-  barGraph.tooltip._data.datasets[0].label = 'Times Clicked';
-}
-
-function makeRatioGraph() {
-  data.datasets[0].data = ratioData;
+  data.datasets[0].label = 'Clicks per Item';
+  stepSize = 1;
   drawBarGraph();
   barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+  barGraph.tooltip._data.datasets[0].data = percentData;
+}
+
+function newCanvas() {
+  chartEl.innerHTML = '';
+  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
+}
+
+function makePercentGraph() {
+  data.datasets[0].data = percentData;
+  data.datasets[0].label = 'Clicks : Times-Shown';
+  stepSize = 20;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Clicks';
+  barGraph.tooltip._data.datasets[0].data = clickData;
 }
 
 function handleAllSuckClick() {
@@ -140,10 +154,10 @@ function generateData() {
   for (var i = 0; i < numProducts; i++) {
     labels[i] = productObjectList[i].name;
     clickData[i] = productObjectList[i].clicks;
-    ratioData[i] = productObjectList[i].clickedToShownRatio();
+    percentData[i] = productObjectList[i].clicksPerTimesShownPercentage();
   }
   numSort(clickData);
-  numSort(ratioData);
+  numSort(percentData);
 }
 
 function numSort(array) {
@@ -155,7 +169,7 @@ function numSort(array) {
 var data =  {
   labels: labels,
   datasets: [{
-    label: 'Votes per Item (Sorted by Times Clicked to Times Shown Ratio)',
+    label: 'Clicks per Item',
     data: clickData,
     backgroundColor: ['rgba(299, 99, 99, 0.2)',
                       'rgba(299, 199, 99, 0.2)',
@@ -183,7 +197,7 @@ var data =  {
 };
 
 function drawBarGraph() {
-
+  newCanvas();
   var ctx = document.getElementById('bargraph').getContext('2d');
   barGraph = new Chart(ctx, {
     type: 'bar',
@@ -193,19 +207,18 @@ function drawBarGraph() {
         yAxes: [{
           ticks:{
             min: 0,
-            stepSize: 1
+            stepSize: stepSize
           }
         }]
       },
       responsive: false
     }
   });
-  // customToolTips();
 }
 
 // function customToolTips() {
 //   barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
-//   barGraph.tooltip._data.datasets[0].data = ratioData;
+//   barGraph.tooltip._data.datasets[0].data = percentData;
 // }
 
 function makeObjectList() {

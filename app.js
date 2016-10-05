@@ -1,5 +1,5 @@
 'use strict';
-
+// global goodies
 var productNameList = ['bag.jpg', 'bathroom.jpg',	'breakfast.jpg', 'chair.jpg',	'dog-duck.jpg', 'pen.jpg', 'scissors.jpg', 'sweep.png',	'unicorn.jpg', 'water-can.jpg', 'banana.jpg', 'boots.jpg', 'bubblegum.jpg', 'cthulhu.jpg', 'dragon.jpg', 'pet-sweep.jpg', 'shark.jpg', 'tauntaun.jpg', 'usb.gif', 'wine-glass.jpg'];
 var productObjectList = [];
 var previousThree = [];
@@ -14,11 +14,12 @@ var chartEl = document.getElementById('chart');
 var revealButtonEl = document.createElement('button');
 var allsuckEl = document.getElementById('allsuck');
 var imgContainers = document.getElementsByClassName('imgcontainer');
-var setCount = 0;
+var voteCount = 0;
 var notShownYet = [];
 var barGraph;
 var stepSize = 1;
 
+// Product Object Constructor
 function Product(filename) {
   this.name = filename.substring(0, filename.length - 4);
   this.filePath = './img/' + filename;
@@ -29,6 +30,7 @@ function Product(filename) {
   };
 };
 
+// selects three non-repeated images
 function selectThree() {
   currentThree = [];
   var numSelected = 0;
@@ -46,6 +48,7 @@ function selectThree() {
   previousThree = currentThree.slice();
 }
 
+// helper
 function chooseRandomProduct() {
   if (notShownYet.length > 0) {
     var index = Math.floor(Math.random() * notShownYet.length);
@@ -59,44 +62,53 @@ function chooseRandomProduct() {
 }
 
 function renderThree() {
-  // imagesEl.innerHTML = '';
   for (var i = 0; i < 3; i++) {
     var imgEl = document.getElementById(i + 'img');
     imgEl.src = currentThree[i].filePath;
   }
 }
 
-function handleImgClick(event) {
+function handleAllSuckClick() {
+  selectThree();
+  renderThree();
+  console.log(voteCount);
+}
 
+function handleImgClick(event) {
   var target = event.target;
-  // console.log(target);
   if (target.getAttribute('id') === 'images') {
     return console.log('clicked...but not on image');
   }
   var targetObject = whichObject(target);
   targetObject.clicks += 1;
-  setCount++;
-  if (setCount === 25) {
+  voteCount++;
+  if (voteCount === 25) {
     imagesEl.removeEventListener('mouseup', handleImgClick);
+    // makes the image containers' borders red
     for (var i = 2; i >= 0; i--) {
       imgContainers[i].setAttribute('class', 'end');
     }
+    // maybe should move the sort into the results handler; just has to be done before generateData
     sortProductsByClicks();
     revealResultsButton();
   } else {
     selectThree();
     renderThree();
   }
-    // console.log(setCount);
-  console.log(setCount);
+  console.log(voteCount);
+}
+
+function whichObject(targetEl) {
+  var i = parseInt(targetEl.getAttribute('id'));
+  // console.log(i);
+  return currentThree[i];
 }
 
 function revealResultsButton() {
-
+  // not sure this first step is necessary
   revealButtonEl.setAttribute('type', 'button');
   revealButtonEl.textContent = 'Show Results';
   resultsEl.appendChild(revealButtonEl);
-
   revealButtonEl.addEventListener('click', handleResultsButtonClick);
 }
 
@@ -132,6 +144,7 @@ function makePercentGraph() {
   generateData();
   data.datasets[0].data = percentData;
   data.datasets[0].label = 'Clicks : Times-Shown';
+  // could set stepSize same way data and label are set above
   stepSize = 20;
   drawBarGraph();
   barGraph.tooltip._data.datasets[0].label = 'Clicks';
@@ -141,18 +154,6 @@ function makePercentGraph() {
 function newCanvas() {
   chartEl.innerHTML = '';
   chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
-}
-
-function handleAllSuckClick() {
-  selectThree();
-  renderThree();
-  console.log(setCount);
-}
-
-function whichObject(targetEl) {
-  var i = parseInt(targetEl.getAttribute('id'));
-  // console.log(i);
-  return currentThree[i];
 }
 
 function generateData() {
@@ -183,6 +184,7 @@ function sortProductsByPercent() {
   });
 }
 
+// I don't know where this should be...
 var data =  {
   labels: labels,
   datasets: [{
@@ -232,11 +234,6 @@ function drawBarGraph() {
     }
   });
 }
-
-// function customToolTips() {
-//   barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
-//   barGraph.tooltip._data.datasets[0].data = percentData;
-// }
 
 function makeObjectList() {
   for (var i = 0; i < numProducts; i++) {

@@ -81,6 +81,7 @@ function handleImgClick(event) {
     for (var i = 2; i >= 0; i--) {
       imgContainers[i].setAttribute('class', 'end');
     }
+    sortProductsByClicks();
     revealResultsButton();
   } else {
     selectThree();
@@ -116,6 +117,8 @@ function handleResultsButtonClick() {
 }
 
 function makeClicksGraph() {
+  sortProductsByClicks();
+  generateData();
   data.datasets[0].data = clickData;
   data.datasets[0].label = 'Clicks per Item';
   stepSize = 1;
@@ -124,18 +127,20 @@ function makeClicksGraph() {
   barGraph.tooltip._data.datasets[0].data = percentData;
 }
 
-function newCanvas() {
-  chartEl.innerHTML = '';
-  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
-}
-
 function makePercentGraph() {
+  sortProductsByPercent();
+  generateData();
   data.datasets[0].data = percentData;
   data.datasets[0].label = 'Clicks : Times-Shown';
   stepSize = 20;
   drawBarGraph();
   barGraph.tooltip._data.datasets[0].label = 'Clicks';
   barGraph.tooltip._data.datasets[0].data = clickData;
+}
+
+function newCanvas() {
+  chartEl.innerHTML = '';
+  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
 }
 
 function handleAllSuckClick() {
@@ -156,13 +161,25 @@ function generateData() {
     clickData[i] = productObjectList[i].clicks;
     percentData[i] = productObjectList[i].clicksPerTimesShownPercentage();
   }
-  numSort(clickData);
-  numSort(percentData);
 }
 
-function numSort(array) {
-  array.sort(function (a, b) {
-    return b - a;
+function sortProductsByClicks() {
+  productObjectList.sort(function (a, b) {
+    if (b.clicks === a.clicks) {
+      return b.clicksPerTimesShownPercentage() - a.clicksPerTimesShownPercentage();
+    } else {
+      return b.clicks - a.clicks;
+    }
+  });
+}
+
+function sortProductsByPercent() {
+  productObjectList.sort(function (a, b) {
+    if (b.clicksPerTimesShownPercentage() === a.clicksPerTimesShownPercentage()) {
+      return b.clicks - a.clicks;
+    } else {
+      return b.clicksPerTimesShownPercentage() - a.clicksPerTimesShownPercentage();
+    }
   });
 }
 

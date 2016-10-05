@@ -28,18 +28,23 @@ h2 {
 }
 
 #instructions {
-  margin: 50px;
+  margin: 35px;
+  margin-left: 50px;
 }
 
 #images {
   margin: auto;
+  margin-bottom: 40px;
   text-align: center;
   clear:right;
 }
 
 #results {
-  margin-left: 100px;
+  min-height: 40px;
+  text-align: center;
+  padding-bottom: 40px;
 }
+
 
 #allsuck {
   position: absolute;
@@ -52,6 +57,7 @@ button {
   background-color: #d5d5d7;
   border: 2px solid gray;
   transition: 200ms all;
+  cursor: pointer;
 }
 
 button:hover {
@@ -65,8 +71,22 @@ div {
   height: 300px;
   vertical-align: middle;
   text-align: center;
-  border: 2px solid gray;
+  border: 4px outset #d5d5d5;
   margin-right: 5px;
+  cursor: pointer;
+}
+
+div:active {
+  border: 4px inset #d5d5d5;
+}
+
+.end {
+  border-color: #ef9999;
+  cursor: default;
+}
+
+.end:active {
+  border-color: #aa0000;
 }
 
 span {
@@ -82,7 +102,6 @@ li {
   line-height: 200%;
 }
 
-
-#results button {
-  margin-top: 30px;
+canvas {
+  margin: 30px auto;
 }

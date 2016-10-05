@@ -6,6 +6,7 @@
     <link href="style.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=Quicksand">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
   </head>
   <body>
     <header>
@@ -13,14 +14,18 @@
       <h2>Product Research</h2>
     </header>
     <section id="instructions">
+      <p>Which would you buy?</p>
       <p>Choose your favorite product from each set of three products.</p>
       <p>You will be shown 25 sets.</p>
     </section>
     <button id="allsuck" type="button">They all suck</button>
     <section id="images">
-
+      <div id="0container" class="imgcontainer"><img id="0img"><span></span></div>
+      <div id="1container" class="imgcontainer"><img id="1img"><span></span></div>
+      <div id="2container" class="imgcontainer"><img id="2img"><span></span></div>
     </section>
     <section id="results"></section>
+    <section id="chart"></section>
     <script src="app.js"></script>
   </body>
 </html>

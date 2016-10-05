@@ -4,60 +4,65 @@ var productNameList = ['bag.jpg', 'bathroom.jpg',	'breakfast.jpg', 'chair.jpg',	
 var productObjectList = [];
 var previousThree = [];
 var currentThree = [];
+var clickData = [];
+var labels = [];
+var percentData = [];
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
-var buttonEl = document.createElement('button');
-var clickListEl = document.createElement('ul');
+var chartEl = document.getElementById('chart');
+var revealButtonEl = document.createElement('button');
 var allsuckEl = document.getElementById('allsuck');
+var imgContainers = document.getElementsByClassName('imgcontainer');
 var setCount = 0;
+var notShownYet = [];
+var barGraph;
+var stepSize = 1;
 
 function Product(filename) {
   this.name = filename.substring(0, filename.length - 4);
   this.filePath = './img/' + filename;
   this.clicks = 0;
   this.timesShown = 0;
-  this.percentageClicked = function() {
+  this.clicksPerTimesShownPercentage = function() {
     return (100.0 * this.clicks / this.timesShown).toPrecision(3);
-  }
+  };
 };
 
 function selectThree() {
   currentThree = [];
   var numSelected = 0;
+
   do {
-    var randomObj = chooseRandomProduct()
-    // console.log(randomObj.name);
+    var randomObj = chooseRandomProduct();
     if ((currentThree.indexOf(randomObj) === -1) && (previousThree.indexOf(randomObj) === -1)) {
-      // console.log('Adding ' + randomObj.name + ' to currentThree');
       currentThree.push(randomObj);
       randomObj.timesShown += 1;
       ++numSelected;
     }
-    // console.log('current three: ');
-    // console.log(currentThree);
   } while (numSelected < 3);
+
   previousThree = [];
   previousThree = currentThree.slice();
 }
 
 function chooseRandomProduct() {
-  var randomIndex = Math.floor(Math.random() * numProducts);
-  return productObjectList[randomIndex];
+  if (notShownYet.length > 0) {
+    var index = Math.floor(Math.random() * notShownYet.length);
+    var obj = notShownYet[index];
+    notShownYet.splice(index, 1);
+    console.log('splicing ' + obj.name);
+    return obj;
+  } else {
+    return productObjectList[Math.floor(Math.random() * productObjectList.length)];
+  }
 }
 
 function renderThree() {
-  imagesEl.innerHTML = '';
+  // imagesEl.innerHTML = '';
   for (var i = 0; i < 3; i++) {
-    var divEl = document.createElement('div');
-    divEl.setAttribute('id', i + 'imgcontainer');
-    var imgEl = document.createElement('img');
-    imgEl.setAttribute('src', currentThree[i].filePath);
-    imgEl.setAttribute('id', i + 'img');
-    var helperEl = document.createElement('span');
-    divEl.appendChild(helperEl);
-    divEl.appendChild(imgEl);
-    imagesEl.appendChild(divEl);
+    var imgEl = document.getElementById(i + 'img');
+    imgEl.src = currentThree[i].filePath;
   }
 }
 
@@ -70,30 +75,72 @@ function handleImgClick(event) {
   }
   var targetObject = whichObject(target);
   targetObject.clicks += 1;
-  ++setCount;
-  if (setCount >= 25) {
+  setCount++;
+  if (setCount === 25) {
+    imagesEl.removeEventListener('mouseup', handleImgClick);
+    for (var i = 2; i >= 0; i--) {
+      imgContainers[i].setAttribute('class', 'end');
+    }
+    sortProductsByClicks();
     revealResultsButton();
-    return imagesEl.removeEventListener('click', handleImgClick);
   } else {
     selectThree();
     renderThree();
-    // console.log(setCount);
   }
+    // console.log(setCount);
   console.log(setCount);
 }
 
 function revealResultsButton() {
 
-  buttonEl.setAttribute('type', 'button');
-  buttonEl.textContent = 'Show Results';
-  resultsEl.appendChild(buttonEl);
+  revealButtonEl.setAttribute('type', 'button');
+  revealButtonEl.textContent = 'Show Results';
+  resultsEl.appendChild(revealButtonEl);
 
-  buttonEl.addEventListener('click', handleResultsButtonClick);
+  revealButtonEl.addEventListener('click', handleResultsButtonClick);
 }
 
 function handleResultsButtonClick() {
   resultsEl.innerHTML = '';
-  generateClickList();
+  var clicksGraphButton = document.createElement('button');
+  var percentGraphButton = document.createElement('button');
+  clicksGraphButton.textContent = 'Show Clicks';
+  percentGraphButton.textContent = 'Show Clicks per Times Shown %';
+  resultsEl.appendChild(clicksGraphButton);
+  resultsEl.appendChild(percentGraphButton);
+  clicksGraphButton.addEventListener('click', makeClicksGraph);
+  percentGraphButton.addEventListener('click', makePercentGraph);
+  generateData();
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+  barGraph.tooltip._data.datasets[0].data = percentData;
+}
+
+function makeClicksGraph() {
+  sortProductsByClicks();
+  generateData();
+  data.datasets[0].data = clickData;
+  data.datasets[0].label = 'Clicks per Item';
+  stepSize = 1;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+  barGraph.tooltip._data.datasets[0].data = percentData;
+}
+
+function makePercentGraph() {
+  sortProductsByPercent();
+  generateData();
+  data.datasets[0].data = percentData;
+  data.datasets[0].label = 'Clicks : Times-Shown';
+  stepSize = 20;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Clicks';
+  barGraph.tooltip._data.datasets[0].data = clickData;
+}
+
+function newCanvas() {
+  chartEl.innerHTML = '';
+  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
 }
 
 function handleAllSuckClick() {
@@ -108,26 +155,97 @@ function whichObject(targetEl) {
   return currentThree[i];
 }
 
-function generateClickList() {
-  clickListEl.innerHTML = '';
+function generateData() {
   for (var i = 0; i < numProducts; i++) {
-    var liEl = document.createElement('li');
-    var numClicks = productObjectList[i].clicks;
-    var timesShown = productObjectList[i].timesShown;
-    var percentageClicked = productObjectList[i].percentageClicked();
-    liEl.textContent = productObjectList[i].name + ':  ' + numClicks + ' clicks; ' + timesShown + ' times shown; clicked ' + percentageClicked + '% of the time.';
-    clickListEl.appendChild(liEl);
+    labels[i] = productObjectList[i].name;
+    clickData[i] = productObjectList[i].clicks;
+    percentData[i] = productObjectList[i].clicksPerTimesShownPercentage();
   }
-  resultsEl.appendChild(clickListEl);
 }
+
+function sortProductsByClicks() {
+  productObjectList.sort(function (a, b) {
+    if (b.clicks === a.clicks) {
+      return b.clicksPerTimesShownPercentage() - a.clicksPerTimesShownPercentage();
+    } else {
+      return b.clicks - a.clicks;
+    }
+  });
+}
+
+function sortProductsByPercent() {
+  productObjectList.sort(function (a, b) {
+    if (b.clicksPerTimesShownPercentage() === a.clicksPerTimesShownPercentage()) {
+      return b.clicks - a.clicks;
+    } else {
+      return b.clicksPerTimesShownPercentage() - a.clicksPerTimesShownPercentage();
+    }
+  });
+}
+
+var data =  {
+  labels: labels,
+  datasets: [{
+    label: 'Clicks per Item',
+    data: clickData,
+    backgroundColor: ['rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)',
+                      'rgba(299, 99, 99, 0.2)',
+                      'rgba(299, 199, 99, 0.2)'],
+    borderColor: 'rgba(99, 99, 199, 1)',
+    borderWidth: 1
+  }]
+};
+
+function drawBarGraph() {
+  newCanvas();
+  var ctx = document.getElementById('bargraph').getContext('2d');
+  barGraph = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: {
+      scales: {
+        yAxes: [{
+          ticks:{
+            min: 0,
+            stepSize: stepSize
+          }
+        }]
+      },
+      responsive: false
+    }
+  });
+}
+
+// function customToolTips() {
+//   barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+//   barGraph.tooltip._data.datasets[0].data = percentData;
+// }
 
 function makeObjectList() {
   for (var i = 0; i < numProducts; i++) {
     productObjectList.push(new Product(productNameList[i]));
+    notShownYet.push(productObjectList[i]);
   }
 }
 
-imagesEl.addEventListener('click', handleImgClick);
+imagesEl.addEventListener('mouseup', handleImgClick);
 allsuckEl.addEventListener('click', handleAllSuckClick);
 
 makeObjectList();

@@ -86,3 +86,7 @@ li {
 #results button {
   margin-top: 30px;
 }
+
+canvas {
+  margin: 30px auto;
+}

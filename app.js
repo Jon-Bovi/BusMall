@@ -6,46 +6,53 @@ var previousThree = [];
 var currentThree = [];
 var clickData = [];
 var labels = [];
+var ratioData = [];
 var barGraph;
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
-var resultsEl = document.getElementById('results');
+var resultbuttonEl = document.getElementById('resultbutton');
 var buttonEl = document.createElement('button');
 var allsuckEl = document.getElementById('allsuck');
 var setCount = 0;
+var notShownYet = [];
 
 function Product(filename) {
   this.name = filename.substring(0, filename.length - 4);
   this.filePath = './img/' + filename;
   this.clicks = 0;
   this.timesShown = 0;
-  this.percentageClicked = function() {
-    return (100.0 * this.clicks / this.timesShown).toPrecision(3);
+  this.clickedToShownRatio = function() {
+    return (this.clicks / this.timesShown).toPrecision(3);
   };
 };
 
 function selectThree() {
   currentThree = [];
   var numSelected = 0;
+
   do {
     var randomObj = chooseRandomProduct();
-    // console.log(randomObj.name);
     if ((currentThree.indexOf(randomObj) === -1) && (previousThree.indexOf(randomObj) === -1)) {
-      // console.log('Adding ' + randomObj.name + ' to currentThree');
       currentThree.push(randomObj);
       randomObj.timesShown += 1;
       ++numSelected;
     }
-    // console.log('current three: ');
-    // console.log(currentThree);
   } while (numSelected < 3);
+
   previousThree = [];
   previousThree = currentThree.slice();
 }
 
 function chooseRandomProduct() {
-  var randomIndex = Math.floor(Math.random() * numProducts);
-  return productObjectList[randomIndex];
+  if (notShownYet.length > 0) {
+    var index = Math.floor(Math.random() * notShownYet.length);
+    var obj = notShownYet[index];
+    notShownYet.splice(index, 1);
+    console.log('splicing ' + obj.name);
+    return obj;
+  } else {
+    return productObjectList[Math.floor(Math.random() * productObjectList.length)];
+  }
 }
 
 function renderThree() {
@@ -88,13 +95,13 @@ function revealResultsButton() {
 
   buttonEl.setAttribute('type', 'button');
   buttonEl.textContent = 'Show Results';
-  resultsEl.appendChild(buttonEl);
+  resultbuttonEl.appendChild(buttonEl);
 
   buttonEl.addEventListener('click', handleResultsButtonClick);
 }
 
 function handleResultsButtonClick() {
-  resultsEl.innerHTML = '';
+  resultbuttonEl.innerHTML = '';
   drawBarGraph();
 }
 
@@ -110,55 +117,66 @@ function whichObject(targetEl) {
   return currentThree[i];
 }
 
-// var numClicks = productObjectList[i].clicks;
-// var timesShown = productObjectList[i].timesShown;
-// var percentageClicked = productObjectList[i].percentageClicked();
-
-
-function generateData(array, dataType) {
+function generateData() {
   for (var i = 0; i < numProducts; i++) {
-    array[i] = productObjectList[i][dataType];
+    labels[i] = productObjectList[i].name;
+    clickData[i] = productObjectList[i].clicks;
+    ratioData[i] = productObjectList[i].clickedToShownRatio();
   }
+}
+
+function sortByRatio() {
+  productObjectList.sort(function (a, b) {
+    if (b.clickedToShownRatio() === a.clickedToShownRatio()) {
+      return b.clicks - a.clicks;
+    }
+    return b.clickedToShownRatio() - a.clickedToShownRatio();
+  });
 }
 
 var data =  {
   labels: labels,
   datasets: [{
-    label: '# of Votes',
+    label: 'Votes per Item (Sorted by Times Clicked to Times Shown Ratio)',
     data: clickData,
-    backgroundColor: [
-      'rgba(255, 99, 132, 0.2)',
-      'rgba(54, 162, 235, 0.2)',
-      'rgba(255, 206, 86, 0.2)',
-      'rgba(75, 192, 192, 0.2)',
-      'rgba(153, 102, 255, 0.2)',
-      'rgba(255, 159, 64, 0.2)'
-    ],
-    borderColor: [
-      'rgba(255,99,132,1)',
-      'rgba(54, 162, 235, 1)',
-      'rgba(255, 206, 86, 1)',
-      'rgba(75, 192, 192, 1)',
-      'rgba(153, 102, 255, 1)',
-      'rgba(255, 159, 64, 1)'
-    ],
+    backgroundColor: 'rgba(99, 99, 299, 0.2)',
+    borderColor: 'rgba(99, 99, 199, 1)',
     borderWidth: 1
   }]
 };
 
 function drawBarGraph() {
-  generateData(clickData, 'clicks');
-  generateData(labels, 'name');
+  sortByRatio();
+  generateData();
   var ctx = document.getElementById('bargraph').getContext('2d');
   barGraph = new Chart(ctx, {
     type: 'bar',
     data: data,
+    options: {
+      scales: {
+        yAxes: [{
+          ticks:{
+            min: 0,
+            stepSize: 1
+          }
+        }]
+      },
+      responsive: false
+    }
   });
+  customToolTips();
+}
+
+function customToolTips() {
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+  barGraph.config.data.datasets[0].data = clickData;
+  barGraph.tooltip._data.datasets[0].data = ratioData;
 }
 
 function makeObjectList() {
   for (var i = 0; i < numProducts; i++) {
     productObjectList.push(new Product(productNameList[i]));
+    notShownYet.push(productObjectList[i]);
   }
 }
 

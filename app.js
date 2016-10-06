@@ -1,18 +1,61 @@
 'use strict';
 // global goodies
-var productNameList = ['bag.jpg', 'bathroom.jpg',	'breakfast.jpg', 'chair.jpg',	'dog-duck.jpg', 'pen.jpg', 'scissors.jpg', 'sweep.png',	'unicorn.jpg', 'water-can.jpg', 'banana.jpg', 'boots.jpg', 'bubblegum.jpg', 'cthulhu.jpg', 'dragon.jpg', 'pet-sweep.jpg', 'shark.jpg', 'tauntaun.jpg', 'usb.gif', 'wine-glass.jpg'];
+var productNameList = ['bag.jpg',
+                        'bathroom.jpg',
+                        'breakfast.jpg',
+                        'chair.jpg',
+                        'dog-duck.jpg',
+                        'pen.jpg',
+                        'scissors.jpg',
+                        'sweep.png',
+                        'unicorn.jpg',
+                        'water-can.jpg',
+                        'banana.jpg',
+                        'boots.jpg',
+                        'bubblegum.jpg',
+                        'cthulhu.jpg',
+                        'dragon.jpg',
+                        'pet-sweep.jpg',
+                        'shark.jpg',
+                        'tauntaun.jpg',
+                        'usb.gif',
+                        'wine-glass.jpg'];
+var colorList = ['rgba(99, 99, 299, 0.2)',
+                  'rgba(165, 42, 42, 0.2)',
+                  'rgba(64, 224, 208, 0.2)',
+                  'rgba(299, 199, 199, 0.2)',
+                  'rgba(255, 255, 99, 0.2)',
+                  'blue',
+                  'rgba(22, 22, 22, 0.2)',
+                  'cyan',
+                  'lavender',
+                  'lightseagreen',
+                  'yellow',
+                  'orange',
+                  'peru',
+                  'green',
+                  'firebrick',
+                  'maroon',
+                  'gray',
+                  'darkgray',
+                  'limegreen',
+                  'darkred'];
+
 var productObjectList = [];
 var previousThree = [];
 var currentThree = [];
 var clickData = [];
 var labels = [];
 var percentData = [];
+var colorData = [];
 var numProducts = productNameList.length;
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
 var chartEl = document.getElementById('chart');
 var revealButtonEl = document.createElement('button');
-var allsuckEl = document.getElementById('allsuck');
+var allSuckButtonEl = document.getElementById('allsuck');
+var resetButtonEl = document.getElementById('reset');
+var fancyButtons = document.getElementById('fancybuttons');
 var imgContainers = document.getElementsByClassName('imgcontainer');
 var voteCount = 0;
 var notShownYet = [];
@@ -25,9 +68,7 @@ function Product(filename) {
   this.filePath = './img/' + filename;
   this.clicks = 0;
   this.timesShown = 0;
-  this.clicksPerTimesShownPercentage = function() {
-    return (100.0 * this.clicks / this.timesShown).toPrecision(3);
-  };
+  this.color = 'pink';
 };
 function calcPercentage(product) {
   return (100.0 * product.clicks / product.timesShown).toPrecision(3);
@@ -70,10 +111,15 @@ function renderThree() {
   }
 }
 
-function handleAllSuckClick() {
-  selectThree();
-  renderThree();
-  console.log(voteCount);
+function handleFancyButtonClick(event) {
+  if (event.target === allSuckButtonEl) {
+    console.log('YUUUP');
+    selectThree();
+    renderThree();
+    console.log(voteCount);
+  } else if (event.target === resetButtonEl) {
+    localStorage.clear();
+  }
 }
 
 function handleImgClick(event) {
@@ -119,8 +165,8 @@ function handleResultsButtonClick() {
   resultsEl.innerHTML = '';
   var clicksGraphButton = document.createElement('button');
   var percentGraphButton = document.createElement('button');
-  clicksGraphButton.textContent = 'Show Clicks';
-  percentGraphButton.textContent = 'Show Clicks per Times Shown %';
+  clicksGraphButton.textContent = 'Chart Clicks';
+  percentGraphButton.textContent = 'Chart Clicks/Times-Shown %';
   resultsEl.appendChild(clicksGraphButton);
   resultsEl.appendChild(percentGraphButton);
   clicksGraphButton.addEventListener('click', makeClicksGraph);
@@ -146,7 +192,7 @@ function makePercentGraph() {
   sortProductsByPercent();
   generateData();
   data.datasets[0].data = percentData;
-  data.datasets[0].label = 'Clicks : Times-Shown';
+  data.datasets[0].label = 'Clicks / Times-Shown %';
   // could set stepSize same way data and label are set above
   stepSize = 20;
   drawBarGraph();
@@ -156,7 +202,7 @@ function makePercentGraph() {
 
 function newCanvas() {
   chartEl.innerHTML = '';
-  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="250px"></canvas>';
+  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="300px"></canvas>';
 }
 
 function generateData() {
@@ -164,6 +210,7 @@ function generateData() {
     labels[i] = productObjectList[i].name;
     clickData[i] = productObjectList[i].clicks;
     percentData[i] = calcPercentage(productObjectList[i]);
+    colorData[i] = productObjectList[i].color;
   }
 }
 
@@ -193,26 +240,7 @@ var data =  {
   datasets: [{
     label: 'Clicks per Item',
     data: clickData,
-    backgroundColor: ['rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)',
-                      'rgba(299, 99, 99, 0.2)',
-                      'rgba(299, 199, 99, 0.2)'],
+    backgroundColor: colorData,
     borderColor: 'rgba(99, 99, 199, 1)',
     borderWidth: 1
   }]
@@ -242,8 +270,10 @@ function makeObjectList() {
   for (var i = 0; i < numProducts; i++) {
     productObjectList.push(new Product(productNameList[i]));
     notShownYet.push(productObjectList[i]);
+    productObjectList[i].color = colorList[i];
   }
 }
+
 function handleLoad() {
   if (localStorage.productObjectList) {
     productObjectList = JSON.parse(localStorage.getItem('productObjectList'));
@@ -257,6 +287,6 @@ function handleLoad() {
 }
 
 imagesEl.addEventListener('mouseup', handleImgClick);
-allsuckEl.addEventListener('click', handleAllSuckClick);
+fancyButtons.addEventListener('click', handleFancyButtonClick);
 
 window.addEventListener('load', handleLoad);

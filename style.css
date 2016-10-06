@@ -4,6 +4,7 @@
 
 body {
   margin: 0px;
+  margin-bottom: 50px;
 }
 
 img {
@@ -45,11 +46,17 @@ h2 {
   padding-bottom: 40px;
 }
 
-
-#allsuck {
+#fancybuttons {
   position: absolute;
   right: 70px;
   top: 220px;
+}
+
+#fancybuttons button {
+}
+
+#reset {
+  top: 0;
 }
 
 button {
@@ -65,20 +72,23 @@ button:hover {
   background-color: #777777;
 }
 
-div {
+.imgcontainer, .end {
   display: inline-block;
   width: 30%;
   height: 300px;
   vertical-align: middle;
   text-align: center;
-  border: 4px outset #d5d5d5;
+  border: 4px outset #e5e5e5;
   margin-right: 5px;
   cursor: pointer;
+  transition: 1000ms all;
 }
 
-div:active {
+.imgcontainer:active {
   border: 4px inset #d5d5d5;
 }
+
+
 
 .end {
   border-color: #ff7777;
@@ -103,5 +113,5 @@ li {
 }
 
 canvas {
-  margin: 30px auto;
+  margin: 30px 18% 30px auto;
 }

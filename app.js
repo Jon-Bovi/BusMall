@@ -20,6 +20,7 @@ var productNameList = ['bag.jpg',
                         'tauntaun.jpg',
                         'usb.gif',
                         'wine-glass.jpg'];
+
 var colorList = ['rgb(99, 99, 299)',
                   'rgb(165, 42, 42)',
                   'rgb(64, 224, 208)',
@@ -41,14 +42,17 @@ var colorList = ['rgb(99, 99, 299)',
                   'limegreen',
                   'darkred'];
 
+var numProducts = productNameList.length;
 var productObjectList = [];
+// for preventing repetition
 var previousThree = [];
 var currentThree = [];
+// arrays chartJS uses
 var clickData = [];
 var labels = [];
 var percentData = [];
 var colorData = [];
-var numProducts = productNameList.length;
+
 var imagesEl = document.getElementById('images');
 var resultsEl = document.getElementById('results');
 var chartEl = document.getElementById('chart');
@@ -70,9 +74,20 @@ function Product(filename) {
   this.timesShown = 0;
   this.color = 'pink';
 };
+
+function makeObjectList() {
+  for (var i = 0; i < numProducts; i++) {
+    productObjectList.push(new Product(productNameList[i]));
+    notShownYet.push(productObjectList[i]);
+    productObjectList[i].color = colorList[i];
+  }
+}
+
 function calcPercentage(product) {
   return (100.0 * product.clicks / product.timesShown).toPrecision(3);
 }
+
+
 // selects three non-repeated images
 function selectThree() {
   currentThree = [];
@@ -152,6 +167,7 @@ function handleImgClick(event) {
   console.log(voteCount);
 }
 
+// helper
 function whichObject(targetEl) {
   var i = parseInt(targetEl.getAttribute('id'));
   // console.log(i);
@@ -182,34 +198,7 @@ function handleResultsButtonClick() {
   barGraph.tooltip._data.datasets[0].data = percentData;
 }
 
-function makeClicksGraph() {
-  sortProductsByClicks();
-  generateData();
-  data.datasets[0].data = clickData;
-  data.datasets[0].label = 'Clicks per Item';
-  stepSize = 1;
-  drawBarGraph();
-  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
-  barGraph.tooltip._data.datasets[0].data = percentData;
-}
-
-function makePercentGraph() {
-  sortProductsByPercent();
-  generateData();
-  data.datasets[0].data = percentData;
-  data.datasets[0].label = 'Clicks / Times-Shown %';
-  // could set stepSize same way data and label are set above
-  stepSize = 20;
-  drawBarGraph();
-  barGraph.tooltip._data.datasets[0].label = 'Clicks';
-  barGraph.tooltip._data.datasets[0].data = clickData;
-}
-
-function newCanvas() {
-  chartEl.innerHTML = '';
-  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="300px"></canvas>';
-}
-
+// building the data arrays the chart uses
 function generateData() {
   for (var i = 0; i < numProducts; i++) {
     labels[i] = productObjectList[i].name;
@@ -239,7 +228,30 @@ function sortProductsByPercent() {
   });
 }
 
-// I don't know where this should be...
+function makeClicksGraph() {
+  sortProductsByClicks();
+  generateData();
+  data.datasets[0].data = clickData;
+  data.datasets[0].label = 'Clicks per Item';
+  stepSize = 1;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Times Clicked / Times Shown';
+  barGraph.tooltip._data.datasets[0].data = percentData;
+}
+
+function makePercentGraph() {
+  sortProductsByPercent();
+  generateData();
+  data.datasets[0].data = percentData;
+  data.datasets[0].label = 'Clicks / Times-Shown %';
+  // could set stepSize same way data and label are set above
+  stepSize = 20;
+  drawBarGraph();
+  barGraph.tooltip._data.datasets[0].label = 'Clicks';
+  barGraph.tooltip._data.datasets[0].data = clickData;
+}
+
+// chartJS
 var data =  {
   labels: labels,
   datasets: [{
@@ -271,15 +283,12 @@ function drawBarGraph() {
   });
 }
 
-function makeObjectList() {
-  for (var i = 0; i < numProducts; i++) {
-    productObjectList.push(new Product(productNameList[i]));
-    notShownYet.push(productObjectList[i]);
-    productObjectList[i].color = colorList[i];
-  }
+function newCanvas() {
+  chartEl.innerHTML = '';
+  chartEl.innerHTML = '<canvas id="bargraph" width="800px" height="300px"></canvas>';
 }
 
-function handleLoad() {
+function handlePageLoad() {
   if (localStorage.productObjectList) {
     productObjectList = JSON.parse(localStorage.getItem('productObjectList'));
   }
@@ -293,5 +302,4 @@ function handleLoad() {
 
 imagesEl.addEventListener('mouseup', handleImgClick);
 fancyButtons.addEventListener('click', handleFancyButtonClick);
-
-window.addEventListener('load', handleLoad);
+window.addEventListener('load', handlePageLoad);

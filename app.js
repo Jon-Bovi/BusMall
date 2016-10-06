@@ -20,13 +20,13 @@ var productNameList = ['bag.jpg',
                         'tauntaun.jpg',
                         'usb.gif',
                         'wine-glass.jpg'];
-var colorList = ['rgba(99, 99, 299, 0.2)',
-                  'rgba(165, 42, 42, 0.2)',
-                  'rgba(64, 224, 208, 0.2)',
-                  'rgba(299, 199, 199, 0.2)',
-                  'rgba(255, 255, 99, 0.2)',
+var colorList = ['rgb(99, 99, 299)',
+                  'rgb(165, 42, 42)',
+                  'rgb(64, 224, 208)',
+                  'rgb(299, 199, 199)',
+                  'rgb(255, 255, 99)',
                   'blue',
-                  'rgba(22, 22, 22, 0.2)',
+                  'rgb(22, 22, 22)',
                   'cyan',
                   'lavender',
                   'lightseagreen',
@@ -80,10 +80,14 @@ function selectThree() {
 
   do {
     var randomObj = chooseRandomProduct();
+    console.log('Try ' + randomObj.name);
     if ((currentThree.indexOf(randomObj) === -1) && (previousThree.indexOf(randomObj) === -1)) {
       currentThree.push(randomObj);
       randomObj.timesShown += 1;
       ++numSelected;
+      console.log('Add ' + randomObj.name);
+    } else {
+      console.log('Repeat. Try again.');
     }
   } while (numSelected < 3);
 
@@ -113,7 +117,7 @@ function renderThree() {
 
 function handleFancyButtonClick(event) {
   if (event.target === allSuckButtonEl) {
-    console.log('YUUUP');
+    console.log('Boooooooo');
     selectThree();
     renderThree();
     console.log(voteCount);
@@ -128,6 +132,7 @@ function handleImgClick(event) {
     return console.log('clicked...but not on image');
   }
   var targetObject = whichObject(target);
+  console.log('Clicked on ' + targetObject.name);
   targetObject.clicks += 1;
   localStorage.setItem('productObjectList', JSON.stringify(productObjectList));
   voteCount++;

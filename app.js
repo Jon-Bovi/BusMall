@@ -130,17 +130,6 @@ function renderThree() {
   }
 }
 
-function handleFancyButtonClick(event) {
-  if (event.target === allSuckButtonEl) {
-    console.log('Boooooooo');
-    selectThree();
-    renderThree();
-    console.log(voteCount);
-  } else if (event.target === resetButtonEl) {
-    localStorage.clear();
-  }
-}
-
 function handleImgClick(event) {
   var target = event.target;
   if (target.getAttribute('id') === 'images') {
@@ -172,6 +161,18 @@ function whichObject(targetEl) {
   var i = parseInt(targetEl.getAttribute('id'));
   // console.log(i);
   return currentThree[i];
+}
+
+function handleFancyButtonClick(event) {
+  if (event.target === allSuckButtonEl) {
+    console.log('Boooooooo');
+    selectThree();
+    renderThree();
+    console.log(voteCount);
+  } else if (event.target === resetButtonEl) {
+    localStorage.clear();
+    event.target.textContent = 'Start Fresh on Reload';
+  }
 }
 
 function revealResultsButton() {

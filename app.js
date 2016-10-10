@@ -61,6 +61,7 @@ var allSuckButtonEl = document.getElementById('allsuck');
 var resetButtonEl = document.getElementById('reset');
 var fancyButtons = document.getElementById('fancybuttons');
 var imgContainers = document.getElementsByClassName('imgcontainer');
+var setCounterEl = document.getElementById('sets');
 var voteCount = 0;
 var notShownYet = [];
 var barGraph;
@@ -78,7 +79,6 @@ function Product(filename) {
 function makeObjectList() {
   for (var i = 0; i < numProducts; i++) {
     productObjectList.push(new Product(productNameList[i]));
-    notShownYet.push(productObjectList[i]);
     productObjectList[i].color = colorList[i];
   }
 }
@@ -140,6 +140,7 @@ function handleImgClick(event) {
   targetObject.clicks += 1;
   localStorage.setItem('productObjectList', JSON.stringify(productObjectList));
   voteCount++;
+  setCounterEl.textContent = 'You will be shown ' + (25 - voteCount) + ' more sets.';
   if (voteCount === 25) {
     imagesEl.removeEventListener('mouseup', handleImgClick);
     // makes the image containers' borders red
@@ -292,11 +293,12 @@ function newCanvas() {
 function handlePageLoad() {
   if (localStorage.productObjectList) {
     productObjectList = JSON.parse(localStorage.getItem('productObjectList'));
+    notShownYet = productObjectList.splice();
   }
   else {
     makeObjectList();
   }
-
+  notShownYet = productObjectList.slice();
   selectThree();
   renderThree();
 }
